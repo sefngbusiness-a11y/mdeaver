@@ -28,7 +28,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url("/assets/children-community.jpg");
+  background-image: url("/assets/children-community.jpeg");
   background-size: cover;
   background-position: center;
 }
@@ -342,7 +342,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  background-image: url("/assets/children-community.jpg");
+  background-image: url("/assets/children-community.jpeg");
   background-size: cover;
   background-position: center;
 }

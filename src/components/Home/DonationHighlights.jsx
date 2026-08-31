@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "./DonationHighlights.css";
 
-const solarImage = "/assets/children-community.jpg";
+const solarImage = "/assets/children-community.jpeg";
 const plantImage = "/assets/food-distribution.jpg";
 
 function DonationHighlights() {

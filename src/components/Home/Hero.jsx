@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import "./Hero.css";
 
 const heroBackground = "/assets/image-hero.jpeg";
-const personImage = "/assets/community-children.jpg";
-const plantImage = "/assets/children-community.jpg";
+const personImage = "/assets/community-children.jpeg";
+const plantImage = "/assets/children-community.jpeg";
 
 function Hero() {
   // Tracks which card is centered in the mobile swipe deck so the

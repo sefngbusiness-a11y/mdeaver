@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useDonation } from "../context/DonationContext";
 import "./Footer.css";
 
-const causeImage1 = "/assets/community-children.jpg";
+const causeImage1 = "/assets/community-children.jpeg";
 const causeImage2 = "/assets/homeless-community.jpg";
 const causeImage3 = "/assets/outreach-support.jpg";
 const causeImage4 = "/assets/children-donation.jpg";

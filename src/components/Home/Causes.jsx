@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import "./Causes.css";
 
-const supportImage = "/assets/children-community.jpg";
-const familyImage = "/assets/community-children.jpg";
+const supportImage = "/assets/children-community.jpeg";
+const familyImage = "/assets/community-children.jpeg";
 const communityImage = "/assets/food-distribution.jpg";
 const housingImage = "/assets/homeless-tents.jpg";
 const hardshipImage = "/assets/individual-support.jpg";
