@@ -736,50 +736,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* ================= FINAL CTA ================= */}
-      <section className="final-about-cta">
-        <div className="final-cta-overlay"></div>
-
-        <div className="final-cta-content">
-          <div className="section-label light">
-            <span></span>
-            <p>Our work continues</p>
-          </div>
-
-          <h2>
-            A future with
-            <br />
-            more hope.
-          </h2>
-
-          <p>
-            With the support of compassionate individuals, organizations, and
-            communities, we can reach more people, provide meaningful
-            assistance, and help create brighter possibilities for the future.
-          </p>
-
-          <div className="final-cta-buttons">
-            <button
-              type="button"
-              className="difference-action"
-              onClick={() => openDonateModal()}
-            >
-              <span>Donate</span>
-              <i className="fa-solid fa-arrow-right"></i>
-            </button>
-
-            <Link to="/contact" className="difference-action">
-              <span>Request Assistance</span>
-              <i className="fa-solid fa-arrow-right"></i>
-            </Link>
-
-            <Link to="/contact" className="difference-action">
-              <span>Get in Touch</span>
-              <i className="fa-solid fa-arrow-right"></i>
-            </Link>
-          </div>
-        </div>
-      </section>
     </main>
   );
 };

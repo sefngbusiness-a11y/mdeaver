@@ -5,7 +5,6 @@ import Donate from "../components/Home/Donate.jsx";
 import ImpactSection from "../components/Home/ImpactSection.jsx";
 import StatisticsBanner from "../components/Home/StatisticsBanner.jsx";
 // import PlansSection from "../components/Home/PlansSection.jsx";
-import HelpSection from "../components/Home/HelpSection.jsx";
 
 function Home() {
   return (
@@ -15,7 +14,6 @@ function Home() {
       <Donate />
       <StatisticsBanner />
       {/* <PlansSection /> */}
-      <HelpSection />
     </>
   );
 }

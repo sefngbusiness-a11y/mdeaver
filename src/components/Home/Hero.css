@@ -29,9 +29,9 @@
     ),
     var(--hero-bg);
 
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 
   color: #ffffff;
 }
@@ -788,7 +788,9 @@
       ),
       var(--hero-bg);
 
-    background-position: center;
+    background-position: center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
   }
 
   .hero::after {

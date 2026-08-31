@@ -144,10 +144,6 @@ function Navbar() {
           </Link>
 
           <Link to="/impact" onClick={closeMenu}>
-            Who We Support
-          </Link>
-
-          <Link to="/impact" onClick={closeMenu}>
             Our Impact
           </Link>
 
