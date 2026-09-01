@@ -5,13 +5,19 @@ import {
   sendVisitNotification,
   sendContactEmail,
   sendDonationEmail,
+  sendApprovalEmail,
 } from './services/emailService.js';
 import {
   saveDonationToSupabase,
   getDonationsFromSupabase,
+  approveDonationInSupabase,
+  getDonationByIdFromSupabase,
+  getChatMessagesFromSupabase,
+  saveChatMessageToSupabase,
   saveContactToSupabase,
   getContactsFromSupabase,
   saveVisitToSupabase,
+  getVisitsFromSupabase,
   getStatsFromSupabase,
   checkSupabaseHealth,
 } from './services/supabaseService.js';
@@ -101,19 +107,52 @@ app.post(['/api/donations/notify', '/donations/notify'], async (req, res) => {
       timestamp: formattedTime,
     };
 
-    // Store in Supabase database & send email receipt
-    const dbResult = await saveDonationToSupabase(donationData);
-    const emailResult = await sendDonationEmail(donationData);
+    // Store in Supabase database with pending_approval status
+    const dbResult = await saveDonationToSupabase({
+      ...donationData,
+      status: 'pending_approval',
+    });
 
     res.json({
       success: true,
-      message: 'Donation recorded in Supabase and receipt dispatched via email.',
+      message: 'Donation submission logged. Awaiting administrator approval.',
       invoiceNumber: generatedInvoice,
       dbResult,
-      emailResult,
     });
   } catch (error) {
     console.error('[EXPRESS DONATION ERROR]:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 3b. Approve Donation & Send Approval Email with Chat Link
+app.post(['/api/donations/:id/approve', '/donations/:id/approve'], async (req, res) => {
+  try {
+    const { id } = req.params;
+    const dbResult = await approveDonationInSupabase(id);
+
+    if (!dbResult.success || !dbResult.data) {
+      return res.status(400).json({ success: false, error: dbResult.error || 'Donation record not found.' });
+    }
+
+    const approvedDonation = dbResult.data;
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const host = req.headers['host'] || 'localhost:5173';
+    const clientOrigin = req.headers['origin'] || `${protocol}://${host}`;
+    const chatUrl = `${clientOrigin}/chat?id=${approvedDonation.id}`;
+
+    // Send email with live chat link to donor
+    const emailResult = await sendApprovalEmail(approvedDonation, chatUrl);
+
+    res.json({
+      success: true,
+      message: 'Donation approved successfully and approval email with chat link sent to donor.',
+      donation: approvedDonation,
+      emailResult,
+      chatUrl,
+    });
+  } catch (error) {
+    console.error('[EXPRESS DONATION APPROVAL ERROR]:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -128,6 +167,49 @@ app.get(['/api/donations', '/donations'], async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+// 4b. Live Donor-Admin Chat Endpoints
+app.get(['/api/chat/:donationId', '/chat/:donationId'], async (req, res) => {
+  try {
+    const { donationId } = req.params;
+    const [donationRes, messagesRes] = await Promise.all([
+      getDonationByIdFromSupabase(donationId),
+      getChatMessagesFromSupabase(donationId),
+    ]);
+
+    res.json({
+      success: true,
+      donation: donationRes.data || null,
+      messages: messagesRes.data || [],
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post(['/api/chat/:donationId', '/chat/:donationId'], async (req, res) => {
+  try {
+    const { donationId } = req.params;
+    const { invoiceNumber, senderType, senderName, message } = req.body;
+
+    if (!message || !senderType || !senderName) {
+      return res.status(400).json({ success: false, error: 'Message, senderType, and senderName are required.' });
+    }
+
+    const saveRes = await saveChatMessageToSupabase({
+      donationId,
+      invoiceNumber,
+      senderType,
+      senderName,
+      message,
+    });
+
+    res.json(saveRes);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 
 // 5. Contact Form Submission
 app.post(['/api/contact', '/contact'], async (req, res) => {
@@ -191,6 +273,18 @@ app.post(['/api/notify/visit', '/notify/visit'], async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+// 8. Retrieve Recent Visits from Supabase
+app.get(['/api/visits', '/visits'], async (req, res) => {
+  try {
+    const limit = Number(req.query.limit) || 20;
+    const result = await getVisitsFromSupabase(limit);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 
 // 404 Fallback Handler
 app.use((req, res) => {

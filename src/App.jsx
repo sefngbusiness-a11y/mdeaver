@@ -15,38 +15,37 @@ import About from "./pages/About";
 import Impact from "./pages/Impact";
 import Donate from "./pages/Donate";
 import Contact from "./pages/Contact";
+import LiveChat from "./pages/LiveChat";
+
+import { AdminAuthProvider } from "./admin/context/AdminAuthContext";
+import AdminLayout from "./admin/AdminLayout";
+import AdminDashboard from "./admin/pages/AdminDashboard";
+import AdminDonations from "./admin/pages/AdminDonations";
+import AdminContacts from "./admin/pages/AdminContacts";
+import AdminVisits from "./admin/pages/AdminVisits";
+import AdminAuditLogs from "./admin/pages/AdminAuditLogs";
+import AdminSettings from "./admin/pages/AdminSettings";
+import AdminLogin from "./admin/pages/AdminLogin";
 
 function ScrollAndAOSRefresh() {
   const location = useLocation();
-
   useEffect(() => {
     window.scrollTo(0, 0);
-    const timer = setTimeout(() => {
-      AOS.refreshHard();
-    }, 150);
+    const timer = setTimeout(() => AOS.refreshHard(), 150);
     return () => clearTimeout(timer);
   }, [location.pathname]);
-
   return null;
 }
 
-function AppContent() {
+function MainWebsiteLayout() {
   useVisitTracker();
-
   useEffect(() => {
-    AOS.init({
-      duration: 750,
-      easing: "ease-out-cubic",
-      once: false,
-      offset: 50,
-    });
+    AOS.init({ duration: 750, easing: "ease-out-cubic", once: false, offset: 50 });
   }, []);
 
   return (
-    <BrowserRouter>
-      <ScrollAndAOSRefresh />
+    <>
       <Navbar />
-
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -56,17 +55,38 @@ function AppContent() {
       </Routes>
       <Footer />
       <DonationModal />
-    </BrowserRouter>
+    </>
   );
 }
 
 function App() {
   return (
     <DonationProvider>
-      <AppContent />
+      <AdminAuthProvider>
+        <BrowserRouter>
+          <ScrollAndAOSRefresh />
+          <Routes>
+            {/* ── Donor Live Chat Route ───────────────────── */}
+            <Route path="/chat" element={<LiveChat />} />
+
+            {/* ── Admin Portal ─────────────────────────────── */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="donations" element={<AdminDonations />} />
+              <Route path="contacts" element={<AdminContacts />} />
+              <Route path="visits" element={<AdminVisits />} />
+              <Route path="logs" element={<AdminAuditLogs />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+
+            {/* ── Public Donor Website ─────────────────────── */}
+            <Route path="*" element={<MainWebsiteLayout />} />
+          </Routes>
+        </BrowserRouter>
+      </AdminAuthProvider>
     </DonationProvider>
   );
 }
 
 export default App;
-

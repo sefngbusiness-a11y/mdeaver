@@ -1,5 +1,8 @@
-// Robustly format API_BASE URL, eliminating trailing slashes and preventing double-slashes (//api)
+// Robustly format API_BASE URL, defaulting to local /api proxy when on localhost
 const getApiBase = () => {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return '/api';
+  }
   const envUrl = import.meta.env.VITE_API_URL;
   if (!envUrl) return '/api';
   // Strip trailing slashes
@@ -114,14 +117,92 @@ export const sendDonationNotification = async (donationData) => {
   }
 };
 
-/**
- * Fetch Recent Donations
- */
 export const fetchRecentDonations = async (limit = 10) => {
   try {
     const res = await fetch(`${API_BASE}/donations?limit=${limit}`);
-    return await parseJsonResponse(res);
+    const json = await parseJsonResponse(res);
+    if (json?.data && Array.isArray(json.data)) return json.data;
+    if (Array.isArray(json)) return json;
+    return [];
   } catch (err) {
-    return { success: false, error: err.message, data: [] };
+    return [];
   }
 };
+
+export const fetchDonations = fetchRecentDonations;
+
+/**
+ * Fetch Contact Form Messages
+ */
+export const fetchContacts = async (limit = 20) => {
+  try {
+    const res = await fetch(`${API_BASE}/contact?limit=${limit}`);
+    const json = await parseJsonResponse(res);
+    if (json?.data && Array.isArray(json.data)) return json.data;
+    if (Array.isArray(json)) return json;
+    return [];
+  } catch (err) {
+    return [];
+  }
+};
+
+/**
+ * Fetch Live Visitor Traffic
+ */
+export const fetchVisits = async (limit = 20) => {
+  try {
+    const res = await fetch(`${API_BASE}/visits?limit=${limit}`);
+    const json = await parseJsonResponse(res);
+    if (json?.data && Array.isArray(json.data)) return json.data;
+    if (Array.isArray(json)) return json;
+    return [];
+  } catch (err) {
+    return [];
+  }
+};
+
+/**
+ * Approve Donation (Admin Action)
+ */
+export const approveDonation = async (donationId) => {
+  try {
+    const res = await fetch(`${API_BASE}/donations/${donationId}/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return await parseJsonResponse(res);
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+/**
+ * Fetch Chat History for a Donation
+ */
+export const fetchChatData = async (donationId) => {
+  try {
+    const res = await fetch(`${API_BASE}/chat/${donationId}`);
+    return await parseJsonResponse(res);
+  } catch (err) {
+    return { success: false, error: err.message, donation: null, messages: [] };
+  }
+};
+
+/**
+ * Post Chat Message
+ */
+export const postChatMessage = async (donationId, messageData) => {
+  try {
+    const res = await fetch(`${API_BASE}/chat/${donationId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(messageData),
+    });
+    return await parseJsonResponse(res);
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+
+

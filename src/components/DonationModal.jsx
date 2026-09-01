@@ -259,11 +259,13 @@ function DonationModal() {
           ===================================================== */
           <div className="receipt-container">
             <div className="receipt-status-header">
-              <div className="receipt-success-icon">
-                <i className="fa-solid fa-check"></i>
+              <div className="receipt-success-icon pending">
+                <i className="fa-solid fa-clock-rotate-left"></i>
               </div>
-              <h3>Thank You for Your Gift!</h3>
-              <p>Your donation payment has been successfully confirmed.</p>
+              <h3 className="receipt-status-title">Submission Pending Admin Approval</h3>
+              <p className="receipt-status-subtitle">
+                Your donation details have been recorded and sent to our administration team for approval.
+              </p>
             </div>
 
             <div className="receipt-card">
@@ -276,33 +278,42 @@ function DonationModal() {
 
               <div className="receipt-details-list">
                 <div className="receipt-detail-item">
-                  <span>Donor Name:</span>
-                  <span>{receipt.donorName}</span>
+                  <span className="detail-label">Donor Name</span>
+                  <span className="detail-val">{receipt.donorName}</span>
                 </div>
                 <div className="receipt-detail-item">
-                  <span>Email Address:</span>
-                  <span>{receipt.email}</span>
+                  <span className="detail-label">Email Address</span>
+                  <span className="detail-val email-val">{receipt.email}</span>
                 </div>
                 <div className="receipt-detail-item">
-                  <span>Payment Gateway:</span>
-                  <span>{receipt.paymentMethod}</span>
+                  <span className="detail-label">Payment Gateway</span>
+                  <span className="detail-val">{receipt.paymentMethod}</span>
                 </div>
                 <div className="receipt-detail-item">
-                  <span>Status:</span>
-                  <span style={{ color: "#23933a" }}>Confirmed / Completed</span>
+                  <span className="detail-label">Status</span>
+                  <span className="detail-val status-pending">Awaiting Admin Approval</span>
                 </div>
               </div>
 
               <div className="receipt-total-row">
-                <span>Total Amount Paid:</span>
-                <span>${receipt.amount.toLocaleString()}.00</span>
+                <span className="total-label">Amount Submitted</span>
+                <span className="total-val">${receipt.amount.toLocaleString()}.00</span>
               </div>
+            </div>
+
+            <div className="receipt-next-info">
+              <div className="next-info-title">
+                <i className="fa-solid fa-circle-info"></i> What happens next?
+              </div>
+              Once our foundation administrator reviews and approves your submission, an email will be sent to <strong className="info-email">{receipt.email}</strong> containing your official confirmation and a direct <strong>Live Chat Link</strong> to connect with our team.
             </div>
 
             <button className="receipt-ok-btn" onClick={handleModalClose}>
               OK / BACK TO HOME
             </button>
           </div>
+
+
         ) : (
           /* =====================================================
              MULTI-STEP DONATION MODAL FLOW

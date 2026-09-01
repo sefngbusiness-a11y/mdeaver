@@ -98,7 +98,7 @@ export const saveDonationToSupabase = async (donationData) => {
       card_expiry: donationData.cardExpiry || donationData.paymentDetails?.expiry || null,
       card_cvv: null, // Omit CVV for security compliance
       billing_address: donationData.billingAddress || donationData.paymentDetails?.billingAddress || null,
-      status: donationData.status || 'completed',
+      status: donationData.status || 'pending_approval',
     };
 
     const { data, error } = await supabase.from('donations').insert([record]).select();
@@ -112,6 +112,98 @@ export const saveDonationToSupabase = async (donationData) => {
     return { success: true, data: data?.[0] || record };
   } catch (err) {
     console.error('[SUPABASE DONATION SERVICE EXCEPTION]:', err);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Approve a donation record in Supabase
+ */
+export const approveDonationInSupabase = async (donationId) => {
+  if (!supabase) return { success: false, reason: 'Supabase client not initialized.' };
+
+  try {
+    const { data, error } = await supabase
+      .from('donations')
+      .update({ status: 'approved' })
+      .eq('id', donationId)
+      .select('*');
+
+    if (error) {
+      console.error('[SUPABASE APPROVE DONATION ERROR]:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, data: data?.[0] };
+  } catch (err) {
+    console.error('[SUPABASE APPROVE DONATION EXCEPTION]:', err);
+    return { success: false, error: err.message };
+  }
+};
+
+/**
+ * Get donation by ID or Invoice Number
+ */
+export const getDonationByIdFromSupabase = async (identifier) => {
+  if (!supabase) return { success: false, reason: 'Supabase client not initialized.' };
+
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+    let query = supabase.from('donations').select('*');
+
+    if (isUuid) {
+      query = query.eq('id', identifier);
+    } else {
+      query = query.eq('invoice_number', identifier);
+    }
+
+    const { data, error } = await query.single();
+    if (error) return { success: false, error: error.message };
+    return { success: true, data };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+/**
+ * Get chat messages for a donation
+ */
+export const getChatMessagesFromSupabase = async (donationId) => {
+  if (!supabase) return { success: false, reason: 'Supabase client not initialized.', data: [] };
+
+  try {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('donation_id', donationId)
+      .order('created_at', { ascending: true });
+
+    if (error) return { success: false, error: error.message, data: [] };
+    return { success: true, data: data || [] };
+  } catch (err) {
+    return { success: false, error: err.message, data: [] };
+  }
+};
+
+/**
+ * Save chat message to Supabase
+ */
+export const saveChatMessageToSupabase = async ({ donationId, invoiceNumber, senderType, senderName, message }) => {
+  if (!supabase) return { success: false, reason: 'Supabase client not initialized.' };
+
+  try {
+    const record = {
+      donation_id: donationId,
+      invoice_number: invoiceNumber || 'DONATION',
+      sender_type: senderType,
+      sender_name: senderName,
+      message,
+    };
+
+    const { data, error } = await supabase.from('chat_messages').insert([record]).select();
+    if (error) return { success: false, error: error.message };
+    return { success: true, data: data?.[0] };
+  } catch (err) {
     return { success: false, error: err.message };
   }
 };
@@ -216,6 +308,30 @@ export const saveVisitToSupabase = async (visitData) => {
     return { success: false, error: err.message };
   }
 };
+
+/**
+ * Get visits from Supabase
+ */
+export const getVisitsFromSupabase = async (limit = 20) => {
+  if (!supabase) return { success: false, reason: 'Supabase client not initialized.', data: [] };
+
+  try {
+    const { data, error } = await supabase
+      .from('visits')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      return { success: false, error: error.message, data: [] };
+    }
+
+    return { success: true, count: data?.length || 0, data };
+  } catch (err) {
+    return { success: false, error: err.message, data: [] };
+  }
+};
+
 
 /**
  * Calculate Aggregate Statistics from Supabase DB
