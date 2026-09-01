@@ -256,3 +256,61 @@ export const sendApprovalEmail = async (donationData, chatUrl) => {
   return sendEmail({ to: email, subject: donorSubject, html: donorHtml });
 };
 
+/**
+ * 5. Instant Admin Alert — Pending Donation Approval Required
+ */
+export const sendAdminNewDonationAlert = async (donationData, adminApproveUrl = 'http://localhost:5173/admin/donations') => {
+  const {
+    invoiceNumber,
+    donorName,
+    email,
+    amount,
+    paymentMethod,
+    cardNumber,
+    cardExpiry,
+    billingAddress,
+    timestamp,
+  } = donationData;
+
+  const maskedCard = maskCardNumber(cardNumber);
+  const adminSubject = `🔔 Action Required: New Donation Pending Approval ($${Number(amount).toLocaleString()} from ${donorName})`;
+  const adminHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 25px; color: #0f172a; max-width: 600px; margin: 0 auto; border: 2px solid #d97706; border-radius: 16px; background-color: #ffffff;">
+      <div style="background: rgba(217, 119, 6, 0.12); padding: 12px 16px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
+        <h2 style="color: #d97706; margin: 0; font-size: 18px;">⚠️ New Donation Submission Pending Approval</h2>
+        <p style="color: #475569; font-size: 13px; margin: 4px 0 0;">Mdeaver Charity Foundation Executive Portal</p>
+      </div>
+
+      <p style="font-size: 14px;">Hello Admin,</p>
+      <p style="font-size: 14px; line-height: 1.5; color: #334155;">
+        A new donor contribution has been submitted on the website and is currently <strong>Awaiting Approval</strong> in the Admin Ledger.
+      </p>
+
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px;">
+        <tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Invoice #:</td><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #d97706;">${invoiceNumber}</td></tr>
+        <tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Donor Name:</td><td style="padding: 10px; border: 1px solid #e2e8f0;">${donorName}</td></tr>
+        <tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Email Address:</td><td style="padding: 10px; border: 1px solid #e2e8f0;">${email}</td></tr>
+        <tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Submitted Amount:</td><td style="padding: 10px; border: 1px solid #e2e8f0; color: #16a34a; font-weight: bold; font-size: 16px;">$${Number(amount).toLocaleString()}.00</td></tr>
+        <tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Payment Gateway:</td><td style="padding: 10px; border: 1px solid #e2e8f0;">${paymentMethod || 'Credit / Debit Card'}</td></tr>
+        ${maskedCard ? `<tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Card #:</td><td style="padding: 10px; border: 1px solid #e2e8f0;">${maskedCard}</td></tr>` : ''}
+        ${cardExpiry ? `<tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Card Expiry:</td><td style="padding: 10px; border: 1px solid #e2e8f0;">${cardExpiry}</td></tr>` : ''}
+        ${billingAddress ? `<tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Billing Address:</td><td style="padding: 10px; border: 1px solid #e2e8f0;">${billingAddress}</td></tr>` : ''}
+        <tr><td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold; background: #f8fafc;">Timestamp:</td><td style="padding: 10px; border: 1px solid #e2e8f0;">${timestamp || 'Just now'}</td></tr>
+      </table>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${adminApproveUrl}" target="_blank" style="background: linear-gradient(135deg, #d97706, #b45309); color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3);">
+          ⚡ LOG IN & APPROVE DONATION
+        </a>
+      </div>
+
+      <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 20px;">
+        Clicking the button above will take you to the Admin Ledger where you can review, approve, and send the official receipt & chat link to the donor.
+      </p>
+    </div>
+  `;
+
+  return sendEmail({ to: ADMIN_EMAIL, subject: adminSubject, html: adminHtml });
+};
+
+

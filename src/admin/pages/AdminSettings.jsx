@@ -197,9 +197,9 @@ export default function AdminSettings() {
           >
             {(adminUser?.email?.[0] || 'A').toUpperCase()}
           </div>
-          <div>
-            <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>{adminUser?.fullName}</div>
-            <div style={{ fontSize: '13px', color: '#64748b' }}>{adminUser?.email}</div>
+          <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{adminUser?.fullName}</div>
+            <div style={{ fontSize: '13px', color: '#64748b', wordBreak: 'break-all', overflowWrap: 'anywhere' }}>{adminUser?.email}</div>
             <div
               style={{
                 display: 'inline-flex',
@@ -222,18 +222,18 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <div style={{ padding: '12px 14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+        <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' }}>
+          <div style={{ padding: '12px 14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
             <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Role
             </div>
             <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: 600 }}>Super Administrator</div>
           </div>
-          <div style={{ padding: '12px 14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '12px 14px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0', minWidth: 0 }}>
             <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Last Login
             </div>
-            <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: 600 }}>
+            <div style={{ fontSize: '13px', color: '#0f172a', fontWeight: 600, wordBreak: 'break-word' }}>
               {adminUser?.loggedInAt ? new Date(adminUser.loggedInAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : '—'}
             </div>
           </div>

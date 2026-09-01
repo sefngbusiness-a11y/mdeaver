@@ -6,11 +6,13 @@ import {
   sendContactEmail,
   sendDonationEmail,
   sendApprovalEmail,
+  sendAdminNewDonationAlert,
 } from './services/emailService.js';
 import {
   saveDonationToSupabase,
   getDonationsFromSupabase,
   approveDonationInSupabase,
+  rejectDonationInSupabase,
   getDonationByIdFromSupabase,
   getChatMessagesFromSupabase,
   saveChatMessageToSupabase,
@@ -113,11 +115,19 @@ app.post(['/api/donations/notify', '/donations/notify'], async (req, res) => {
       status: 'pending_approval',
     });
 
+    // Send immediate email alert to ADMIN_EMAIL to notify admin of incoming pending submission
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const host = req.headers['host'] || 'localhost:5173';
+    const clientOrigin = req.headers['origin'] || `${protocol}://${host}`;
+    const adminApproveUrl = `${clientOrigin}/admin/donations`;
+    const adminEmailResult = await sendAdminNewDonationAlert(donationData, adminApproveUrl);
+
     res.json({
       success: true,
       message: 'Donation submission logged. Awaiting administrator approval.',
       invoiceNumber: generatedInvoice,
       dbResult,
+      adminEmailResult,
     });
   } catch (error) {
     console.error('[EXPRESS DONATION ERROR]:', error);
@@ -156,6 +166,28 @@ app.post(['/api/donations/:id/approve', '/donations/:id/approve'], async (req, r
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+// 3c. Reject Donation Route
+app.post(['/api/donations/:id/reject', '/donations/:id/reject'], async (req, res) => {
+  try {
+    const { id } = req.params;
+    const dbResult = await rejectDonationInSupabase(id);
+
+    if (!dbResult.success || !dbResult.data) {
+      return res.status(400).json({ success: false, error: dbResult.error || 'Donation record not found.' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Donation status updated to rejected.',
+      donation: dbResult.data,
+    });
+  } catch (error) {
+    console.error('[EXPRESS DONATION REJECT ERROR]:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 
 // 4. Retrieve Recent Donations from Supabase
 app.get(['/api/donations', '/donations'], async (req, res) => {

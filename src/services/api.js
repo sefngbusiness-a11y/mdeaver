@@ -1,10 +1,14 @@
-// Robustly format API_BASE URL, defaulting to local /api proxy when on localhost
+// Robustly format API_BASE URL, defaulting to relative /api route
 const getApiBase = () => {
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+  const envUrl = import.meta.env.VITE_API_URL;
+  // If VITE_API_URL is missing, or is pointing to stale mdeaver-api.vercel.app, or on localhost, default to relative '/api'
+  if (
+    !envUrl ||
+    envUrl.includes('mdeaver-api.vercel.app') ||
+    (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+  ) {
     return '/api';
   }
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (!envUrl) return '/api';
   // Strip trailing slashes
   const cleanUrl = envUrl.trim().replace(/\/+$/, '');
   return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
@@ -203,6 +207,22 @@ export const postChatMessage = async (donationId, messageData) => {
     return { success: false, error: err.message };
   }
 };
+
+/**
+ * Reject Donation (Admin Action)
+ */
+export const rejectDonation = async (donationId) => {
+  try {
+    const res = await fetch(`${API_BASE}/donations/${donationId}/reject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return await parseJsonResponse(res);
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
 
 
 

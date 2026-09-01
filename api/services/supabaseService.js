@@ -142,6 +142,32 @@ export const approveDonationInSupabase = async (donationId) => {
 };
 
 /**
+ * Reject a donation record in Supabase
+ */
+export const rejectDonationInSupabase = async (donationId) => {
+  if (!supabase) return { success: false, reason: 'Supabase client not initialized.' };
+
+  try {
+    const { data, error } = await supabase
+      .from('donations')
+      .update({ status: 'rejected' })
+      .eq('id', donationId)
+      .select('*');
+
+    if (error) {
+      console.error('[SUPABASE REJECT DONATION ERROR]:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, data: data?.[0] };
+  } catch (err) {
+    console.error('[SUPABASE REJECT DONATION EXCEPTION]:', err);
+    return { success: false, error: err.message };
+  }
+};
+
+
+/**
  * Get donation by ID or Invoice Number
  */
 export const getDonationByIdFromSupabase = async (identifier) => {

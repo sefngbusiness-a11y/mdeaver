@@ -78,7 +78,7 @@ export default function AdminContacts() {
                 {item.message}
               </p>
 
-              <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', gap: '14px', marginTop: '4px' }}>
+              <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', flexWrap: 'wrap', gap: '14px', marginTop: '4px', wordBreak: 'break-all' }}>
                 <span><i className="fa-solid fa-envelope"></i> {item.email}</span>
                 {item.phone && <span><i className="fa-solid fa-phone"></i> {item.phone}</span>}
               </div>
