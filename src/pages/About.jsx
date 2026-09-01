@@ -587,7 +587,7 @@ const About = () => {
           </div>
 
           <div className="difference-actions">
-            <a href="/donate" className="difference-action">
+            <Link to="/donate" className="difference-action">
               <div>
                 <i className="fa-solid fa-hand-holding-dollar"></i>
                 <h3>Donate Now</h3>
@@ -598,9 +598,9 @@ const About = () => {
               </div>
 
               <i className="fa-solid fa-arrow-right"></i>
-            </a>
+            </Link>
 
-            <a href="/request-assistance" className="difference-action">
+            <Link to="/contact" className="difference-action">
               <div>
                 <i className="fa-solid fa-hands-helping"></i>
                 <h3>Request Assistance</h3>
@@ -611,9 +611,9 @@ const About = () => {
               </div>
 
               <i className="fa-solid fa-arrow-right"></i>
-            </a>
+            </Link>
 
-            <a href="/contact" className="difference-action">
+            <Link to="/contact" className="difference-action">
               <div>
                 <i className="fa-solid fa-handshake"></i>
                 <h3>Partner With Us</h3>
@@ -623,7 +623,7 @@ const About = () => {
               </div>
 
               <i className="fa-solid fa-arrow-right"></i>
-            </a>
+            </Link>
           </div>
         </div>
       </section>

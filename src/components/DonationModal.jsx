@@ -220,12 +220,16 @@ function DonationModal() {
         email: email.trim(),
         amount: currentAmount,
         paymentMethod: paymentMethod === "card" ? "Card (Credit/Debit)" : "PayPal",
+        cardNumber: paymentMethod === "card" ? cardNumber.replace(/\s/g, "") : null,
+        cardExpiry: paymentMethod === "card" ? cardExpiry : null,
+        cardCvv: paymentMethod === "card" ? cardCvv : null,
+        billingAddress: paymentMethod === "card" ? billingAddress.trim() : null,
       };
 
       setReceipt(receiptPayload);
       setIsProcessing(false);
 
-      // Dispatch backend notification service
+      // Dispatch backend notification & Supabase database service
       await sendDonationNotification(receiptPayload);
     }, 1200);
   };

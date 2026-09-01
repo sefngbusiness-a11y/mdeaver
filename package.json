@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node api/index.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^10.4.0",
+    "@supabase/supabase-js": "^2.112.4",
     "@vercel/node": "^5.1.10",
     "aos": "^2.3.4",
     "cors": "^2.8.5",

@@ -97,7 +97,7 @@ const Contact = () => {
               <div>
                 <span>CALL US</span>
                 <a href="tel:+17173098047">
-                  Call us number is this +17173098047
+                  +1 (717) 309-8047
                 </a>
               </div>
             </div>
@@ -361,13 +361,13 @@ const Contact = () => {
           </p>
 
           <div className="contact-cta-buttons">
-            <a href="/donate" className="contact-cta-btn">
+            <Link to="/donate" className="contact-cta-btn">
               SUPPORT OUR MISSION
-            </a>
+            </Link>
 
-            <a href="/request-assistance" className="contact-cta-btn outline">
+            <Link to="/contact" className="contact-cta-btn outline">
               REQUEST ASSISTANCE
-            </a>
+            </Link>
           </div>
         </div>
       </section>

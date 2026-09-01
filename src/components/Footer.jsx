@@ -106,9 +106,9 @@ function Footer() {
               financial hardship.
             </p>
 
-            <a href="/request-assistance" className="footer-action-button">
+            <Link to="/contact" className="footer-action-button">
               REQUEST ASSISTANCE
-            </a>
+            </Link>
           </div>
 
           {/* =================================================

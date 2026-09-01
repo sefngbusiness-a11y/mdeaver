@@ -117,8 +117,7 @@ function Hero() {
               </h3>
 
               <p>
-                We support individuals and families facing hardship and help
-                them move toward greater stability, dignity, and opportunity.
+                We aid individuals and families in hardship, guiding them toward stability, dignity, and opportunity.
               </p>
 
               <Link to="/about" className="hero-card-button">
@@ -144,9 +143,7 @@ function Hero() {
               </h3>
 
               <p>
-                Single mothers, families facing financial hardship, people
-                experiencing homelessness, and others going through difficult
-                times.
+                Single mothers, families in hardship, the homeless, and others.
               </p>
 
               <Link to="/contact" className="hero-card-button">
